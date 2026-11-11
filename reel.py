@@ -14,6 +14,7 @@ from lib.ctx import Ctx
 from lib import ui, audio
 from effects2 import ORDER, load
 
+SRC_SHIFT = {"freeze-frame": 1.7, "glass-graph": 2.0}   # take these from a better moment of the clip
 DELAY = {"text-behind": 0.75, "over-the-shoulder": 0.3, "tier-list": 0.4,
          "freeze-frame": 0.82, "glass-graph": 0.45, "color-grade": 0.6}
 
@@ -67,7 +68,7 @@ def main():
     stills = []
     for i, m in enumerate(mods):
         k_full = T0 + i * SEG + Z1 + 0.9
-        stills.append((m.NAME, m.render(ctx, 1.6, src_t(k_full))))
+        stills.append((m.NAME, m.render(ctx, 1.6, src_t(k_full + SRC_SHIFT.get(m.NAME, 0)))))
     thumb = ctx.clip.frame(2.0)
 
     def hook(t):
@@ -136,7 +137,7 @@ def main():
             key = s[-1] if s and ts_ < TY1 + 0.05 else None
             return ui.compose(s, thumb, popup(s), key)
         tl = ts_ - EFF - DELAY.get(m.NAME, 0.5)
-        eff = m.render(ctx, tl, src_t(t))
+        eff = m.render(ctx, tl, src_t(t + SRC_SHIFT.get(m.NAME, 0)))
         status = f"Монтирую: {m.NAME}…"
         if ts_ < Z0:
             return ui.chat(cmd, thumb, status, eff, ease_in_out(prog(ts_, D0, D1 - D0)), show_card=ts_ >= D0 - 0.05)
