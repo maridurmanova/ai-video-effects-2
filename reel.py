@@ -14,7 +14,7 @@ from lib.ctx import Ctx
 from lib import ui, audio
 from effects2 import ORDER, load
 
-SRC_SHIFT = {"freeze-frame": 1.7, "glass-graph": 2.0}   # take these from a better moment of the clip
+SRC_SHIFT = {"freeze-frame": 1.7, "glass-graph": 3.6, "color-grade": 1.5}   # take these from a better moment of the clip
 DELAY = {"text-behind": 0.75, "over-the-shoulder": 0.3, "tier-list": 0.4,
          "freeze-frame": 0.82, "glass-graph": 0.45, "color-grade": 0.6}
 

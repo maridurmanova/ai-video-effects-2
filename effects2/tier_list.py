@@ -81,7 +81,7 @@ def _slot(i):
 
 def render(ctx, tl, ts):
     t = tl
-    img, _ = ctx.src(ts, zoom=1.25, anchor=(540, 880), with_mask=False)
+    img, _ = ctx.src(ts, zoom=1.3, anchor=(540, 1160), with_mask=False)
     img = grade(img, sat=1.04, contrast=1.04)
     q = ease_out(prog(t, 0.0, 0.4))
     off = (1 - q) * 900
