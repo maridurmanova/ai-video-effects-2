@@ -71,7 +71,7 @@ def keyboard(img, pressed=None, typed_word="", ru=None):
 def compose(text, thumb, popup=None, pressed=None, cursor=True, ru=None):
     img, d = _base()
     # popup with slash command suggestions
-    cy0 = 880
+    cy0 = 830
     if popup:
         h = 110 * len(popup) + 20
         d.rounded_rectangle((40, cy0 - h - 16, 1040, cy0 - 16), 28, fill=UI_PANEL)
@@ -79,14 +79,14 @@ def compose(text, thumb, popup=None, pressed=None, cursor=True, ru=None):
             y = cy0 - h - 16 + 22 + i * 110
             d.text((80, y + 8), a, font=font("sans", 40, 700), fill=UI_TEXT)
             d.text((80, y + 60), b, font=font("sans", 26, 500), fill=UI_DIM)
-    d.rounded_rectangle((40, cy0, 1040, 1220), 34, fill=UI_PANEL)
+    d.rounded_rectangle((40, cy0, 1040, cy0 + 400), 34, fill=UI_PANEL)
     if thumb is not None:
         th = _thumb(thumb, (104, 184))
         img.paste(th, (76, cy0 + 26), th)
         d.ellipse((160, cy0 + 18, 196, cy0 + 54), fill=(240, 240, 238))
         d.line((170, cy0 + 28, 186, cy0 + 44), fill=(60, 60, 60), width=4)
         d.line((186, cy0 + 28, 170, cy0 + 44), fill=(60, 60, 60), width=4)
-    ty = cy0 + 236
+    ty = cy0 + 278
     col = CLAY if text.startswith("/") else UI_TEXT
     f = font("sans", 44, 500)
     d.text((80, ty), text, font=f, fill=col, anchor="ls")
@@ -94,10 +94,10 @@ def compose(text, thumb, popup=None, pressed=None, cursor=True, ru=None):
         x = 80 + tw(text, f) + 4
         d.line((x, ty - 42, x, ty + 6), fill=CLAY, width=4)
     # + and mic / send
-    d.text((80, cy0 + 300), "+", font=font("sans", 52, 400), fill=UI_DIM, anchor="lm")
-    d.ellipse((940, cy0 + 262, 1010, cy0 + 332), fill=CLAY)
-    d.polygon([(975, cy0 + 278), (958, cy0 + 300), (992, cy0 + 300)], fill=(255, 255, 255))
-    d.line((975, cy0 + 296, 975, cy0 + 318), fill=(255, 255, 255), width=6)
+    d.text((80, cy0 + 350), "+", font=font("sans", 52, 400), fill=UI_DIM, anchor="lm")
+    d.ellipse((940, cy0 + 312, 1010, cy0 + 382), fill=CLAY)
+    d.polygon([(975, cy0 + 328), (958, cy0 + 350), (992, cy0 + 350)], fill=(255, 255, 255))
+    d.line((975, cy0 + 346, 975, cy0 + 368), fill=(255, 255, 255), width=6)
     word = text.split(" ")[-1].lstrip("/")
     keyboard(img, pressed, word, ru)
     return img

@@ -24,7 +24,7 @@ def main():
     ap.add_argument("--music"); ap.add_argument("--music-start", type=float, default=0.0)
     ap.add_argument("--bpm", type=float, default=107.67); ap.add_argument("--offset", type=float, default=0.035)
     ap.add_argument("--word", default="вирусно")
-    ap.add_argument("--hook", default="МОНТИРУЕШЬ|ЧАСАМИ?")
+    ap.add_argument("--hook", default="", help='opening title "LINE 1|LINE 2"; empty = start straight with the effects')
     ap.add_argument("--sub", default="6 эффектов — одной командой")
     ap.add_argument("--sfx-gain", type=float, default=0.5)
     ap.add_argument("--effects", default=",".join(ORDER))
@@ -35,10 +35,13 @@ def main():
     mods = [load(n) for n in a.effects.split(",")]
     n = len(mods)
     beat = 60 / a.bpm
-    T0 = a.offset + 3 * beat                 # hook = 3 beats
+    T0 = a.offset + (3 * beat if a.hook else 0)   # optional hook = 3 beats
     SEG = 6 * beat                           # each effect = 6 beats
     TEND = T0 + n * SEG
-    total = TEND + 4 * beat
+    total = max(TEND + 4 * beat, TEND + 2.0)
+    if a.music:
+        mdur = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', a.music]))
+        total = max(total, min(mdur - a.music_start, TEND + 4.5))
     span = ctx.clip.duration - 0.15
     SH = 1.45                                # reel time − clip time inside the effect part
 
@@ -119,13 +122,13 @@ def main():
         return img
 
     def frame_at(t):
-        if t < T0:
+        if t < T0 and a.hook:
             return hook(t)
         if t >= TEND:
             return poster(t - TEND)
-        k = int((t - T0) // SEG)
+        k = int(clamp((t - T0) // SEG, 0, n - 1))
         m = mods[k]
-        ts_ = t - T0 - k * SEG
+        ts_ = max(0.0, t - T0 - k * SEG)
         cmd = cmd_of(m)
         if ts_ < CHAT:
             nch = int(len(cmd) * clamp((ts_ - TY0) / (TY1 - TY0)))
@@ -146,7 +149,7 @@ def main():
         return
 
     # ---- sound design (all times in reel seconds)
-    ev = [(0.0 + a.offset, "impact", 0.9), (0.55, "pop", 0.6)]
+    ev = [(0.0 + a.offset, "impact", 0.9), (0.55, "pop", 0.6)] if a.hook else []
     for k, m in enumerate(mods):
         t0 = T0 + k * SEG
         cmd = cmd_of(m)

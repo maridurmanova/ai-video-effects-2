@@ -14,17 +14,31 @@ SFX = [(0.0, "swoosh")] + [(T0 + i * DT + 0.2, "tick") for i in range(len(ITEMS)
 P = (60, 1000, 1020, 1730)
 
 
+TILE = {"text": ((255, 170, 90), (230, 90, 60)), "image": ((120, 200, 255), (60, 110, 240)),
+        "video": ((255, 110, 150), (200, 40, 110)), "voice": ((150, 120, 255), (95, 55, 220)),
+        "music": ((255, 210, 80), (240, 140, 30)), "film": ((90, 220, 170), (20, 150, 120)),
+        "slides": ((110, 225, 255), (30, 160, 210)), "search": ((180, 180, 195), (95, 95, 115)),
+        "star": ((60, 60, 75), (25, 25, 35))}
+
+
 def _icon(kind, s=96):
     im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle((0, 0, s - 1, s - 1), 22, fill=(255, 255, 255, 235))
-    c = (40, 40, 44)
+    c1, c2 = TILE.get(kind, ((90, 90, 100), (50, 50, 60)))
+    g = Image.new("RGBA", (s, s))
+    gd = ImageDraw.Draw(g)
+    for yy in range(s):
+        k = yy / (s - 1)
+        gd.line((0, yy, s, yy), fill=tuple(int(c1[i] * (1 - k) + c2[i] * k) for i in range(3)) + (255,))
+    im.paste(g, (0, 0), rrect_mask((s, s), 24))
+    d.rounded_rectangle((0, 0, s - 1, s - 1), 24, outline=(255, 255, 255, 70), width=2)
+    c = (255, 255, 255)
     m = s / 96
     if kind == "text":
         for i, w in enumerate((56, 56, 40)):
             d.rounded_rectangle((20 * m, (26 + i * 16) * m, (20 + w) * m, (32 + i * 16) * m), 3, fill=c)
     elif kind == "image":
-        d.ellipse((58 * m, 22 * m, 72 * m, 36 * m), fill=CLAY)
+        d.ellipse((58 * m, 22 * m, 72 * m, 36 * m), fill=(255, 230, 120))
         d.polygon([(18 * m, 74 * m), (42 * m, 40 * m), (60 * m, 64 * m), (68 * m, 54 * m), (80 * m, 74 * m)], fill=c)
     elif kind == "video":
         d.polygon([(36 * m, 26 * m), (36 * m, 70 * m), (72 * m, 48 * m)], fill=c)
@@ -45,12 +59,12 @@ def _icon(kind, s=96):
             d.rectangle(((26 + i * 13) * m, 61 * m, (31 + i * 13) * m, 66 * m), fill=c)
     elif kind == "slides":
         for i, h in enumerate((20, 34, 48)):
-            d.rectangle(((24 + i * 18) * m, (72 - h) * m, (36 + i * 18) * m, 72 * m), fill=c if i < 2 else CLAY)
+            d.rectangle(((24 + i * 18) * m, (72 - h) * m, (36 + i * 18) * m, 72 * m), fill=c)
     elif kind == "star":
         import math as _m
         pts = [(48 * m + (30 if i % 2 == 0 else 13) * m * _m.cos(_m.pi / 2 + i * _m.pi / 5),
                 50 * m - (30 if i % 2 == 0 else 13) * m * _m.sin(_m.pi / 2 + i * _m.pi / 5)) for i in range(10)]
-        d.polygon(pts, fill=CLAY)
+        d.polygon(pts, fill=(255, 215, 90))
     elif kind == "search":
         d.ellipse((24 * m, 22 * m, 60 * m, 58 * m), outline=c, width=int(7 * m))
         d.line((56 * m, 54 * m, 74 * m, 72 * m), fill=c, width=int(9 * m))
@@ -67,7 +81,7 @@ def _slot(i):
 
 def render(ctx, tl, ts):
     t = tl
-    img, _ = ctx.src(ts, zoom=1.04, anchor=(540, 600), with_mask=False)
+    img, _ = ctx.src(ts, zoom=1.25, anchor=(540, 880), with_mask=False)
     img = grade(img, sat=1.04, contrast=1.04)
     q = ease_out(prog(t, 0.0, 0.4))
     off = (1 - q) * 900

@@ -36,8 +36,8 @@ def render(ctx, tl, ts):
     cnt = ease_out(prog(t, 0.55, 0.75))
     n = int(AFTER[1] * cnt)
     cards = [
-        (_card(BEFORE), (hx - hw / 2 - 210, htop + 170), -5, 0.15),
-        (_card((AFTER[0], f"{n}K", "+34 000%"), accent=GREEN), (hx + hw / 2 + 200, htop + 120), 5, 0.45),
+        (_card(BEFORE), (min(200, hx - hw / 2 - 190), htop - 10), -5, 0.15),
+        (_card((AFTER[0], f"{n}K", "+34 000%"), accent=GREEN), (max(880, hx + hw / 2 + 190), htop - 50), 5, 0.45),
     ]
     out = img.convert("RGBA")
     for c, (cx, cy), rot, st in cards:
